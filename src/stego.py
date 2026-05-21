@@ -4,17 +4,13 @@ import struct
 import numpy as np
 from PIL import Image
 
-
 class StegoError(Exception):
     pass
 
-
 HEADER_SIZE = 4  # store payload length in 4 bytes
-
 
 def _bytes_to_bits(data: bytes) -> np.ndarray:
     return np.unpackbits(np.frombuffer(data, dtype=np.uint8))
-
 
 def _bits_to_bytes(bits: np.ndarray) -> bytes:
     if len(bits) % 8 != 0:

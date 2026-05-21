@@ -15,5 +15,6 @@ A clean Streamlit project for image-in-image steganography with a better UI and 
 
 ## Project setup
 ```bash
+
 pip install -r requirements.txt
 streamlit run app.py

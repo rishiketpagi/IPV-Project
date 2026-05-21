@@ -27,3 +27,37 @@ def create_diff_image(img1: Image.Image, img2: Image.Image, boost: int = 12) -> 
     diff = np.clip(diff, 0, 255).astype(np.uint8)
 
     return Image.fromarray(diff)
+
+
+def fit_image_to_capacity(
+    img: Image.Image,
+    capacity: int,
+    max_steps: int = 12,
+    min_scale: float = 0.1,
+) -> tuple[Image.Image, bytes, bool]:
+    """Resize image until PNG bytes fit within capacity."""
+    resized = False
+    current = img
+    png_bytes = image_to_png_bytes(current)
+
+    if len(png_bytes) <= capacity:
+        return current, png_bytes, resized
+
+    resized = True
+    for _ in range(max_steps):
+        scale = (capacity / max(1, len(png_bytes))) ** 0.5
+        scale = min(0.95, max(min_scale, scale))
+        new_w = max(1, int(current.width * scale))
+        new_h = max(1, int(current.height * scale))
+
+        if new_w == current.width and new_h == current.height:
+            new_w = max(1, int(current.width * min_scale))
+            new_h = max(1, int(current.height * min_scale))
+
+        current = current.resize((new_w, new_h), Image.LANCZOS)
+        png_bytes = image_to_png_bytes(current)
+
+        if len(png_bytes) <= capacity:
+            return current, png_bytes, resized
+
+    return current, png_bytes, resized
