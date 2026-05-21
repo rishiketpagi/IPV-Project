@@ -29,6 +29,21 @@ def create_diff_image(img1: Image.Image, img2: Image.Image, boost: int = 12) -> 
     return Image.fromarray(diff)
 
 
+def calculate_psnr(img1: Image.Image, img2: Image.Image) -> float:
+    a = np.array(img1.convert("RGB"), dtype=np.float32)
+    b = np.array(img2.convert("RGB"), dtype=np.float32)
+
+    if a.shape != b.shape:
+        raise ValueError("Images must have the same dimensions to compute PSNR.")
+
+    mse = np.mean((a - b) ** 2)
+    if mse == 0:
+        return float("inf")
+
+    max_i = 255.0
+    return 20 * np.log10(max_i) - 10 * np.log10(mse)
+
+
 def fit_image_to_capacity(
     img: Image.Image,
     capacity: int,
